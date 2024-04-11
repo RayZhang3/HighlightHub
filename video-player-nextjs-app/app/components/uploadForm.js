@@ -18,6 +18,7 @@ const UploadForm = () => {
     const fileExtension = file.name.split('.').pop();
     const filename = `${fileId}.${fileExtension}`;
 
+
     // Start uploading process
     setUploading(true);
 
