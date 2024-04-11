@@ -1,6 +1,7 @@
 // pages/api/upload.js
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { DynamoDBClient, PutItemCommand} from "@aws-sdk/client-dynamodb";
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -18,12 +19,30 @@ export default async function handler(req, res) {
       Bucket: process.env.S3_BUCKET,
   }
 );
+const dynamodbClient = new DynamoDBClient({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
 
   const { filename, contentType } = req.body;
 
   // The key could include a user-specific identifier to prevent collisions
   const key = `videos/${filename}`;
 
+  const dynamodbParams = {
+    TableName: process.env.DYNAMODB_TABLE,
+    Item: {
+      fileId: { S: filename }, 
+      filename: { S: filename }, // 根据实际情况调整
+      s3Path: { S: process.env.S3_BUCKET + key},
+      videoInfo: { S: "" },
+    },
+  };
+  
   try {
     const command = new PutObjectCommand({
       Bucket: process.env.S3_BUCKET,
@@ -33,7 +52,8 @@ export default async function handler(req, res) {
 
     // Set the expiry time of the presigned URL (e.g., 15 minutes)
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 });
-
+    // Write file information to DynamoDB
+    await dynamodbClient.send(new PutItemCommand(dynamodbParams));
     return res.status(200).json({
       signedUrl: signedUrl,
       key: key,
