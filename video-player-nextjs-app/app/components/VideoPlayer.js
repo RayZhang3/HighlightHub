@@ -1,21 +1,19 @@
 // app/components/VideoPlayer.js
-'use client';
-
 import React, { useRef } from 'react';
-import ReactPlayer from 'react-player';
+import dynamic from 'next/dynamic';
 
-function VideoPlayer() {
-  const playerRef = useRef(null);
+const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
+const VideoPlayer = React.forwardRef((props, ref) => {
   const handleSeekChange = (e) => {
     const newPlayed = parseFloat(e.target.value);
-    playerRef.current.seekTo(newPlayed, 'fraction');
+    ref.current.seekTo(newPlayed, 'fraction');
   };
 
   return (
     <div>
       <ReactPlayer
-        ref={playerRef}
+        ref={ref}
         url="https://highlighthub.s3.amazonaws.com/videos/NORP_Structured_Project.mp4"
         controls
         playing={false}
@@ -29,6 +27,6 @@ function VideoPlayer() {
       />
     </div>
   );
-}
+});
 
 export default VideoPlayer;

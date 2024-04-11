@@ -13,9 +13,15 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <div>
         <h1>Welcome to our Video Player App</h1>
+        </div>
+        <div>
         <VideoPlayer />
+        </div>
+        <div>
         <UploadForm />
+        </div>
       </main>
     </div>
   );
