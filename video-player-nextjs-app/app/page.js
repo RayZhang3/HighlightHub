@@ -2,8 +2,8 @@
 'use client';
 
 import Head from 'next/head';
-import VideoPlayer from './components/VideoPlayer';
-import UploadForm from './components/UploadForm';
+import VideoPlayer from '../components/VideoPlayer';
+import UploadForm from '../components/UploadForm';
 
 export default function Home() {
   return (
