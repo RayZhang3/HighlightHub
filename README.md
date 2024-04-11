@@ -1,6 +1,7 @@
 # HighlightHub
 
 ```shell
+cd video-player-nextjs-app
 npm install react-player aws-sdk
 npm run dev
 ```
