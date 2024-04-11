@@ -76,3 +76,4 @@ const UploadForm = () => {
 };
 
 export default UploadForm;
+VideoPlayer.displayName = 'UploadForm';  

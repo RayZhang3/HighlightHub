@@ -30,3 +30,4 @@ const VideoPlayer = React.forwardRef((props, ref) => {
 });
 
 export default VideoPlayer;
+VideoPlayer.displayName = 'VideoPlayer';  
