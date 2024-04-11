@@ -17,8 +17,8 @@ function VideoPlayer() {
       <ReactPlayer
         ref={playerRef}
         url="https://highlighthub.s3.amazonaws.com/videos/NORP_Structured_Project.mp4"
-        playing
         controls
+        playing={false}
       />
       <input
         type="range"
