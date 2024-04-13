@@ -1,3 +1,5 @@
+# 
+Course project for CS 6365
 # HighlightHub
 
 ```shell
