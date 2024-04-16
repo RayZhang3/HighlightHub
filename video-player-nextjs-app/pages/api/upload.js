@@ -32,6 +32,7 @@ const dynamodbClient = new DynamoDBClient({
 
   // The key could include a user-specific identifier to prevent collisions
   const key = `videos/${filename}`;
+  const jsonKey = `output/${filename}.json`;
 
   const dynamodbParams = {
     TableName: process.env.DYNAMODB_TABLE,
@@ -39,6 +40,7 @@ const dynamodbClient = new DynamoDBClient({
       fileId: { S: filename }, 
       filename: { S: filename }, // 根据实际情况调整
       s3Path: { S: process.env.S3_BUCKET + key},
+      s3JsonPath: { S: process.env.S3_BUCKET + jsonKey},
       videoInfo: { S: "" },
     },
   };

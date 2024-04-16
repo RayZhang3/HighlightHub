@@ -18,8 +18,16 @@ def lambda_handler(event, context):
     s3_client.download_file(bucket_name, object_key, local_file_path)
 
     # credentials for GCS
-    credentials_info = json.loads(os.environ['GCP_CREDENTIALS_JSON'])
-    credentials = service_account.Credentials.from_service_account_info(credentials_info)
+    credentials_bucket_name = 'highlighthub'
+    credentials_object_key = 'config/utility-folder-416517-bdb4ffa1def1.json'
+    credentials_file_path = '/tmp/utility-folder-416517-bdb4ffa1def1.json'
+    s3_client.download_file(credentials_bucket_name, credentials_object_key, credentials_file_path)
+    video_client = videointelligence.VideoIntelligenceServiceClient.from_service_account_file(credentials_file_path)
+
+
+    # credentials_info = json.loads(os.environ['GCP_CREDENTIALS_JSON'])
+    #  credentials = service_account.Credentials.from_service_account_info(credentials_info)
+    credentials = service_account.Credentials.from_service_account_file(credentials_file_path)
     storage_client = google.cloud.storage.Client(credentials=credentials)
 
     # 指定Google Cloud Storage桶名称
@@ -27,6 +35,7 @@ def lambda_handler(event, context):
     gcs_bucket = storage_client.bucket(gcs_bucket_name)
     gcs_file_path = 'videos/' + object_key.split('/')[-1]  # 构建 GCS 中的存储路径
     gcs_uri = f'gs://{gcs_bucket_name}/{gcs_file_path}'
+    
     # 输出结果的 GCS 路径
     output_path = f'output/{object_key.split("/")[-1]}.json'
     output_uri = f'gs://{gcs_bucket_name}/{output_path}'
@@ -35,18 +44,15 @@ def lambda_handler(event, context):
     blob = gcs_bucket.blob(object_key)
     blob.upload_from_filename(local_file_path)
 
-    # 初始化Google Video Intelligence客户端
-    video_client = videointelligence.VideoIntelligenceServiceClient(credentials=credentials)
-
     # 构建视频分析请求
     features = [
         #videointelligence.Feature.OBJECT_TRACKING,
-        videointelligence.Feature.LABEL_DETECTION,
-        videointelligence.Feature.SHOT_CHANGE_DETECTION,
+        #videointelligence.Feature.LABEL_DETECTION,
+        #videointelligence.Feature.SHOT_CHANGE_DETECTION,
         videointelligence.Feature.SPEECH_TRANSCRIPTION,
         #videointelligence.Feature.LOGO_RECOGNITION,
         #videointelligence.Feature.EXPLICIT_CONTENT_DETECTION,
-        videointelligence.Feature.TEXT_DETECTION,
+        videointelligence.Feature.TEXT_DETECTION
         #videointelligence.Feature.FACE_DETECTION,
         #videointelligence.Feature.PERSON_DETECTION
     ]
@@ -58,7 +64,6 @@ def lambda_handler(event, context):
         speech_transcription_config=transcript_config,
     )
     
-    
     # 发送视频分析请求
     operation = video_client.annotate_video(
         request={"features": features,
@@ -68,7 +73,6 @@ def lambda_handler(event, context):
     )
     response = operation.result()
 
-    
     # 从 GCS 下载分析结果
     gcs_output_blob = gcs_bucket.blob(output_path)
     gcs_output_blob.download_to_filename('/tmp/output.json')
