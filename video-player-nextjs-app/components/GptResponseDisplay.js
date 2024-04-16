@@ -1,4 +1,3 @@
-// components/GptResponseDisplay.js
 import React, { useEffect, useState } from 'react';
 
 const GptResponseDisplay = ({ prompt }) => {
@@ -23,24 +22,35 @@ const GptResponseDisplay = ({ prompt }) => {
         }
 
         const reader = response.body.getReader();
-        reader.read().then(function processText({ done, value }) {
+        const decoder = new TextDecoder('utf-8');
+        
+        // Function to process the stream
+        const processText = async ({ done, value }) => {
           if (done) {
             setIsLoading(false);
             return;
           }
-          setResponse(prevResponse => prevResponse + new TextDecoder().decode(value));
+          // Decode the stream chunk and remove the "0:\"" prefix
+          const chunk = decoder.decode(value);
+          const cleanedChunk = chunk.replace(/0:\\?"([^"]*)\\?"/g, '$1');
+          setResponse(prevResponse => prevResponse + cleanedChunk);
+          // Continue reading
           return reader.read().then(processText);
-        });
+        };
+
+        // Start reading from the stream
+        reader.read().then(processText);
       } catch (err) {
         setIsLoading(false);
         setError('Failed to fetch response from GPT: ' + err.message);
       }
     };
-    
+
     fetchStream();
 
+    // Clean up function to reset loading state on component unmount
     return () => {
-      setIsLoading(false); // Clean up function to reset loading state
+      setIsLoading(false);
     };
   }, [prompt]);
 
