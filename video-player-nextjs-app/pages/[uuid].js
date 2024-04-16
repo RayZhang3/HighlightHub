@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import VideoPlayer from '../components/VideoPlayer';
 import DisplayJson from '../components/DisplayJson'; 
+import GptResponseDisplay from '../components/GptResponseDisplay'; 
 
 const VideoPage = () => {
   const router = useRouter();
@@ -10,6 +11,7 @@ const VideoPage = () => {
   const [videoUrl, setVideoUrl] = useState('');
   const [jsonUrl, setJsonUrl] = useState('');
   const [jsonData, setJsonData] = useState(null);
+
 
   useEffect(() => {
     if (!uuid) return;
@@ -22,7 +24,6 @@ const VideoPage = () => {
         const data = await response.json();
         setVideoUrl(data.videoUrl);
         setJsonUrl(data.jsonUrl);
-        
         // Fetch JSON data if a jsonUrl is provided
         if (data.jsonUrl) {
           const jsonResponse = await fetch(data.jsonUrl);
@@ -36,7 +37,7 @@ const VideoPage = () => {
 
     fetchData();
   }, [uuid]); // Dependency on uuid ensures this effect runs only when uuid changes
-
+  if (!videoUrl) return <div>Loading...</div>;
   return (
     <div>
       {videoUrl && <VideoPlayer src={videoUrl} />}
