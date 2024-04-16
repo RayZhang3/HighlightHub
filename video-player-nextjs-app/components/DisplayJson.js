@@ -1,20 +1,22 @@
 // components/DisplayJson.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TranscriptionsDisplay from './TranscriptionsDisplay';
 import GptResponseDisplay from './GptResponseDisplay';
 
-
 const DisplayJson = ({ jsonData }) => {
   const [transcripts, setTranscripts] = useState('');
+  const [triggerAnalysis, setTriggerAnalysis] = useState(false);
 
-  useEffect(() => {
-    // Assuming TranscriptionsDisplay calls this effect when transcripts change
-  }, [transcripts]);
+  // This function will be called when the button is clicked.
+  const handleAnalyzeClick = () => {
+    setTriggerAnalysis(true); // Set the trigger for analysis
+  };
 
   return (
     <div>
       <TranscriptionsDisplay jsonData={jsonData} onTranscriptsChange={setTranscripts} />
-      {transcripts && <GptResponseDisplay prompt={transcripts} />}
+      <button onClick={handleAnalyzeClick}>Analyze with GPT-3</button>
+      {triggerAnalysis && <GptResponseDisplay prompt={transcripts} />}
     </div>
   );
 };
