@@ -1,4 +1,4 @@
-// pages/api/videos/[uuid].js
+// pages/api/video/[uuid].js
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { S3Client } from "@aws-sdk/client-s3";
 
