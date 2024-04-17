@@ -15,10 +15,10 @@
     "@aws-sdk/s3-request-presigner": "^3.552.0",
     "ai": "^3.0.22",
     "aws-sdk": "^2.1597.0",
-    "next": "14.1.4",
+    "next": "^14.2.1",
     "openai": "^4.35.0",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-player": "^2.16.0",
     "uuid": "^9.0.1"
   },

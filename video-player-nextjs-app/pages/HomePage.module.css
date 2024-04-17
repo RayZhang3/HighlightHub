@@ -1,0 +1,28 @@
+/* HomePage.module.css */
+.container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .videoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  
+  .videoCard {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .videoCard:hover {
+    transform: scale(1.05);
+  }
+  
+  .thumbnail {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
