@@ -29,6 +29,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import VideoPlayer from '../components/VideoPlayer'; // 如果你想在首页也使用VideoPlayer
+import UploadForm from '../components/UploadForm';
 import styles from './HomePage.module.css';
 
 const HomePage = () => {
@@ -52,11 +54,12 @@ const HomePage = () => {
   return (
     <div className={styles.container}>
       <h1>Video Gallery</h1>
+      <UploadForm />  {/* UploadForm组件位置，可根据需要调整 */}
       <div className={styles.videoGrid}>
         {videos.map(video => (
           <Link key={video.id} href={video.url} passHref>
             <div className={styles.videoCard}>
-              <img src={video.imageUrl} alt={video.title} className={styles.thumbnail} /> {/* 使用imageUrl属性 */}
+              <img src={video.imageUrl} alt={video.title} className={styles.thumbnail} />
               <h2>{video.title}</h2>
             </div>
           </Link>
