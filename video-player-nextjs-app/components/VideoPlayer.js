@@ -39,3 +39,5 @@ const VideoPlayer = React.forwardRef(({ src, onProgress }, ref) => {
 });
 
 export default VideoPlayer;
+
+VideoPlayer.displayName = 'VideoPlayer';
