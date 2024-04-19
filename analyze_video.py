@@ -6,29 +6,30 @@ import os
 from google.oauth2 import service_account
 
 def lambda_handler(event, context):
-    # 从事件中获取S3桶名称和对象键
+    # Get S3 bucket name 
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     object_key = event['Records'][0]['s3']['object']['key']
 
-    # 创建S3客户端
+    # Create S3 Client
     s3_client = boto3.client('s3')
-
-    # 下载S3对象到本地
-    local_file_path = '/tmp/' + object_key.split('/')[-1]  # 保证本地文件名没有路径分隔符
-    s3_client.download_file(bucket_name, object_key, local_file_path)
-
+    
     # credentials for GCS
     credentials_bucket_name = 'highlighthub'
     credentials_object_key = 'config/utility-folder-416517-bdb4ffa1def1.json'
     credentials_file_path = '/tmp/utility-folder-416517-bdb4ffa1def1.json'
+
+
+    # Download credentials file from S3
     s3_client.download_file(credentials_bucket_name, credentials_object_key, credentials_file_path)
-    video_client = videointelligence.VideoIntelligenceServiceClient.from_service_account_file(credentials_file_path)
-
-
-    # credentials_info = json.loads(os.environ['GCP_CREDENTIALS_JSON'])
-    #  credentials = service_account.Credentials.from_service_account_info(credentials_info)
     credentials = service_account.Credentials.from_service_account_file(credentials_file_path)
     storage_client = google.cloud.storage.Client(credentials=credentials)
+    video_client = videointelligence.VideoIntelligenceServiceClient(credentials=credentials)
+
+
+    # Download S3 video file to local
+    local_file_path = '/tmp/' + object_key.split('/')[-1]  # 保证本地文件名没有路径分隔符
+    s3_client.download_file(bucket_name, object_key, local_file_path)
+
 
     # 指定Google Cloud Storage桶名称
     gcs_bucket_name = 'myhighlighthub'
@@ -37,7 +38,7 @@ def lambda_handler(event, context):
     gcs_uri = f'gs://{gcs_bucket_name}/{gcs_file_path}'
     
     # 输出结果的 GCS 路径
-    output_path = f'output/{object_key.split("/")[-1]}.json'
+    output_path = f'/output/{object_key.split("/")[-1]}.json'
     output_uri = f'gs://{gcs_bucket_name}/{output_path}'
     
     # 上传文件到Google Cloud Storage

@@ -1,17 +1,19 @@
 // pages/video/[uuid].js
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef} from 'react';
 import VideoPlayer from '../components/VideoPlayer';
 import DisplayJson from '../components/DisplayJson'; 
 import GptResponseDisplay from '../components/GptResponseDisplay'; 
+import TextDetectionViz from '../components/TextDetectionViz'; // Assuming this component is stored in components folder
 
 const VideoPage = () => {
   const router = useRouter();
   const { uuid } = router.query;
+  const videoRef = useRef(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [jsonUrl, setJsonUrl] = useState('');
   const [jsonData, setJsonData] = useState(null);
-
+  const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
     if (!uuid) return;
@@ -40,7 +42,8 @@ const VideoPage = () => {
   if (!videoUrl) return <div>Loading...</div>;
   return (
     <div>
-      {videoUrl && <VideoPlayer src={videoUrl} />}
+      <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
+      {jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
       {jsonData && <DisplayJson jsonData={jsonData} />}
     </div>
   );

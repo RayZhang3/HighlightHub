@@ -1,37 +1,41 @@
-// app/components/VideoPlayer.js
-import React, { useRef } from 'react';
+// components/VideoPlayer.js
+import React from 'react';
 import dynamic from 'next/dynamic';
 
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
+const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
-const VideoPlayer = React.forwardRef(({ src }, ref) => {
-  //const defaultUrl = "https://highlighthub.s3.amazonaws.com/videos/NORP_Structured_Project.mp4";
+const VideoPlayer = React.forwardRef(({ src, onProgress }, ref) => {
+  const playerRef = React.useRef(null); // Internal ref to handle player methods
+
+  React.useImperativeHandle(ref, () => ({
+    seekTo: (seconds) => {
+      if (playerRef.current) {
+        playerRef.current.seekTo(seconds);
+      }
+    }
+  }));
+
   const defaultUrl = "https://highlighthub.s3.amazonaws.com/videos/26901403-a8ac-4109-a138-722722bb8428.mp4";
   const videoUrl = src || defaultUrl;
-
-  const handleSeekChange = (e) => {
-    const newPlayed = parseFloat(e.target.value);
-    ref.current.seekTo(newPlayed, 'fraction');
-  };
 
   return (
     <div>
       <ReactPlayer
-        ref={ref}
+        ref={playerRef}
         url={videoUrl}
         controls
         playing={false}
+        onProgress={onProgress}
       />
       <input
         type="range"
         min={0}
         max={1}
         step="any"
-        onChange={handleSeekChange}
+        onChange={(e) => playerRef.current.seekTo(seconds)}
       />
     </div>
   );
 });
 
 export default VideoPlayer;
-VideoPlayer.displayName = 'VideoPlayer';
