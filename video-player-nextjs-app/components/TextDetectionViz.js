@@ -51,10 +51,20 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef, rating }
   const filteredTextTracks = textTracks.filter((track) =>
     track.text.toLowerCase().includes(submittedSearchTerm.toLowerCase())
   );
-
+  /*
   const handleAnalyze = (text) => {
     setAnalyzedTexts((prevAnalyzedTexts) => [...prevAnalyzedTexts, text]);
   };
+  */
+  const handleAnalyze = (text) => {
+    // Update the state with the text and the current selected rating
+    // This will either overwrite the existing entry with a new rating or create a new one
+    setAnalyzedTexts((prevAnalyzedTexts) => ({
+      ...prevAnalyzedTexts,
+      [text]: rating,
+    }));
+  };
+
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -67,7 +77,11 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef, rating }
               Jump to {track.startTime}s
             </button>
             <button onClick={() => handleAnalyze(track.text)}>Analyze</button>
-            {analyzedTexts.includes(track.text) && (
+            {/* 
+              Render GptGetWord only if the text is in analyzedTexts and the rating matches.
+              This prevents re-rendering if the rating is changed after analysis.
+            */}
+            {analyzedTexts[track.text] === rating && (
               <GptGetWord word={track.text} rating={rating} />
             )}
           </div>
