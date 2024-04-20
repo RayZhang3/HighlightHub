@@ -7,6 +7,7 @@ import GptResponseDisplay from '../components/GptResponseDisplay';
 import TextDetectionViz from '../components/TextDetectionViz'; // Assuming this component is stored in components folder
 import TranscriptionViz from '../components/TranscriptionViz';
 
+
 const VideoPage = () => {
   const router = useRouter();
   const { uuid } = router.query;
@@ -15,6 +16,7 @@ const VideoPage = () => {
   const [jsonUrl, setJsonUrl] = useState('');
   const [jsonData, setJsonData] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
+  const [activeComponent, setActiveComponent] = useState(''); //define the activeComponent state
 
   useEffect(() => {
     if (!uuid) return;
@@ -40,15 +42,35 @@ const VideoPage = () => {
 
     fetchData();
   }, [uuid]); // Dependency on uuid ensures this effect runs only when uuid changes
+
+
+  //function to handle the button click 
+  const handleButtonClick = (component) => {
+    setActiveComponent(component);
+  };
+
+
   if (!videoUrl) return <div>Loading...</div>;
   return (
+    // <div>
+    //   <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
+    //   {jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
+    //   {jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
+    //   {jsonData && <DisplayJson jsonData={jsonData} />}
+    // </div>
+
     <div>
-      <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
-      {jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
-      {jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
-      {jsonData && <DisplayJson jsonData={jsonData} />}
+    <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
+    <div>
+      <button onClick={() => handleButtonClick('TranscriptionViz')}>Current Transcription time </button>
+      <button onClick={() => handleButtonClick('TextDetectionViz')}>Text Detection</button>
+      <button onClick={() => handleButtonClick('DisplayJson')}>Transcripts and Summarization </button>
     </div>
-  );
+    {activeComponent === 'TranscriptionViz' && jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
+    {activeComponent === 'TextDetectionViz' && jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
+    {activeComponent === 'DisplayJson' && jsonData && <DisplayJson jsonData={jsonData} />}
+  </div>
+);
 };
 
 export default VideoPage;
