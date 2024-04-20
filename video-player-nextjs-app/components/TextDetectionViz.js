@@ -1,15 +1,13 @@
-import React, { useState, useEffect }  from 'react';
+import React, { useState, useEffect } from 'react';
+import GptGetWord from './GptGetWord';
 
 const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
-
   const [searchTerm, setSearchTerm] = useState('');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState('');
-
+  const [showGptGetWord, setShowGptGetWord] = useState(false);
+  const [selectedText, setSelectedText] = useState('');
 
   const handleSegmentClick = (seconds) => {
-    // if (videoRef.current) {
-    //   videoRef.current.seekTo(seconds);
-    // }
     console.log('seconds:', seconds, 'videoRef:', videoRef)
     if (videoRef.current) {
       videoRef.current.seekTo(seconds);
@@ -17,16 +15,14 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
   };
 
   const handleSearchSubmit = () => {
-    setSubmittedSearchTerm(searchTerm.trim()); // Use trim to avoid blank searches causing results
+    setSubmittedSearchTerm(searchTerm.trim());
   };
 
-  // Automatically hide results when search term is cleared
   useEffect(() => {
     if (!searchTerm) {
       setSubmittedSearchTerm('');
     }
   }, [searchTerm]);
-
 
   const getTextTracks = () => {
     return jsonData.annotation_results
@@ -46,7 +42,7 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
   const textTracks = getTextTracks();
 
   const getCurrentTextTracks = () => {
-    return textTracks.filter(track => 
+    return textTracks.filter(track =>
       track.startTime <= currentTime && track.endTime >= currentTime
     );
   };
@@ -57,63 +53,62 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
     track.text.toLowerCase().includes(submittedSearchTerm.toLowerCase())
   );
 
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div>
+        <p>Detected text on screen at {Math.floor(currentTime)}s:</p>
+        {currentTextTracks.map((track, index) => (
+          <div key={index}>
+            <div>{track.text}</div>
+            <button onClick={() => handleSegmentClick(track.startTime)}>
+              Jump to {track.startTime}s
+            </button>
+            <button onClick={() => {
+              setSelectedText(track.text);
+              setShowGptGetWord(true);
+            }}>
+              Analyze
+            </button>
+          </div>
+        ))}
+      </div>
 
-//   return (
-    // <div>
-    //   <p>Detected text on screen at {Math.floor(currentTime)}s:</p>
-    //   {currentTextTracks.map((track, index) => (
-    //     <div key={index}>
-    //       <div>{track.text}</div>
-    //       <button onClick={() => handleSegmentClick(track.startTime)}>
-    //         Jump to {track.startTime}s
-    //       </button>
-    //     </div>
-    //   ))}
-    // </div>
-//   );
-// };
+      <div>
+        <input
+          type="text"
+          placeholder="Search for text..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
+        />
+        <button onClick={handleSearchSubmit}>Search</button>
+        {submittedSearchTerm && (
+          filteredTextTracks.length > 0 ? (
+            filteredTextTracks.map((track, index) => (
+              <div key={index}>
+                <div>{track.text}</div>
+                <button onClick={() => handleSegmentClick(track.startTime)}>
+                  Jump to {track.startTime}s
+                </button>
+                <button onClick={() => {
+                  setSelectedText(track.text);
+                  setShowGptGetWord(true);
+                }}>
+                  Analyze
+                </button>
+              </div>
+            ))
+          ) : (
+            <p>No text matches your search.</p>
+          )
+        )}
+      </div>
 
-return (
-  <div style={{ display: 'flex', justifyContent: 'space-between' }}> {/* Flex container */}
-    <div> {/* First child */}
-      <p>Detected text on screen at {Math.floor(currentTime)}s:</p>
-      {currentTextTracks.map((track, index) => (
-        <div key={index}>
-          <div>{track.text}</div>
-          <button onClick={() => handleSegmentClick(track.startTime)}>
-            Jump to {track.startTime}s
-          </button>
-        </div>
-      ))}
-    </div>
-  
-    <div> {/* Second child for search functionality */}
-      <input
-        type="text"
-        placeholder="Search for text..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
-      />
-      <button onClick={handleSearchSubmit}>Search</button>
-      {submittedSearchTerm && ( // Only render this block if a search term has been submitted
-        filteredTextTracks.length > 0 ? (
-          filteredTextTracks.map((track, index) => (
-            <div key={index}>
-              <div>{track.text}</div>
-              <button onClick={() => handleSegmentClick(track.startTime)}>
-                Jump to {track.startTime}s
-              </button>
-            </div>
-          ))
-        ) : (
-          <p>No text matches your search.</p> // Display this only if the search term finds no matches
-        )
+      {showGptGetWord && (
+        <GptGetWord word={selectedText} rating={1} />
       )}
     </div>
-  </div>
-);
+  );
 };
-
 
 export default TextDetectionViz;

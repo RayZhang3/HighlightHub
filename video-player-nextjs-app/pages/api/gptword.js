@@ -1,27 +1,32 @@
-// pages/api/gpt.js
+// pages/api/gptword.js
 import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 
-// Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Set the Next.js function to run on the edge runtime
 export const config = {
   runtime: 'experimental-edge',
 };
 
-// Define the base prompts for each level
-const basePrompts = {
-  1: `Create an explanation of ${concept} suitable for someone with little to no technical knowledge. Use simple analogies and examples from everyday life. Output the explanation in a paragraph with clear, easy-to-understand language.`,
-  2: `Develop an explanation of ${concept} for someone with a basic understanding of technology. Include simple examples and analogies that relate to common technology uses. The output should be a short paragraph with a focus on relatable concepts.`,
-  3: `Craft an explanation of ${concept} for someone with a general understanding of technology and its applications. Discuss the example related to ${concept} and give a high-level overview of its meaning. The output should be a concise paragraph that is technically accurate but still accessible.`,
-  4: `Generate an explanation of ${concept} suitable for someone with an intermediate technical background. Include a discussion on related concepts. Provide a range of applications and their use cases. The output should be a detailed paragraph covering the broader aspects of it.`,
-  5: `Compose an explanation of ${concept} for someone with advanced technical knowledge or experience in the field. Detail the complexity of it. Discuss some advanced applications of it. The output should be a comprehensive paragraph that delves into the technical depth of it, suitable for an expert audience.`
+function generatebasePrompts(word, rating) {
+  if (rating < 1 || rating > 5) throw new Error('Rating must be between 1 and 5');
+  switch (rating) {
+    case 1:
+      return `Create an explanation of ${word} suitable for someone with little to no technical knowledge. Use simple analogies and examples from everyday life. Output the explanation in a paragraph with clear, easy-to-understand language.`;
+    case 2:
+      return `Develop an explanation of ${word} for someone with a basic understanding of technology. Include simple examples and analogies that relate to common technology uses. The output should be a short paragraph with a focus on relatable concepts.`;
+    case 3:
+      return `Craft an explanation of ${word} for someone with a general understanding of technology and its applications. Discuss the example related to ${word} and give a high-level overview of its meaning. The output should be a concise paragraph that is technically accurate but still accessible.`;
+    case 4:
+      return `Generate an explanation of ${word} suitable for someone with an intermediate technical background. Include a discussion on related concepts. Provide a range of applications and their use cases. The output should be a detailed paragraph covering the broader aspects of it.`;
+    case 5:
+      return `Compose an explanation of ${word} for someone with advanced technical knowledge or experience in the field. Detail the complexity of it. Discuss some advanced applications of it. The output should be a comprehensive paragraph that delves into the technical depth of it, suitable for an expert audience.`;
+    default:
+      return '';}
 };
 
-// Define the examples for each level
 const examples = {
   1: `[Question]: What is machine learning?
 [Answer]: Machine learning is like teaching a computer to learn from experience. Just as you might learn a new skill by practicing and getting feedback, computers can improve their performance by analyzing data. For example, when you shop online and see product recommendations based on what you've viewed before, that's machine learning at work.`,
@@ -35,22 +40,19 @@ const examples = {
   [Answer]: Machine learning is a sophisticated domain of artificial intelligence involving numerous algorithms and models designed to learn from large-scale data. It includes supervised learning with specific labeled outcomes, unsupervised learning to identify complex patterns and relationships in unlabeled data, and reinforcement learning, where agents learn optimal behaviors through interactions with an environment. Applications cover a wide range, from deep learning and neural networks for complex pattern recognition to probabilistic models for statistical analysis and predictive analytics.`
 };
 
-// Define the instructions
 const instructions = `#Instructions
 1. Please remember that you should only output the Answer part. There is no need to provide any additional text or information other than the answer itself. 
 2. If you don't understand the content, it is okay to guess. However, if the content is unclear or unreadable, it is best to remind the user that there might be some errors.
 3. Do not mention that "I am an AI language model. I am GPT and I might not comprehend it."
 4. The answer should be less than 250 words.`;
 
-// Function to generate the prompt based on level and concept
-function generatePrompt(concept, level) {
-  const basePrompt = basePrompts[level];
-  const example = examples[level];
-  const prompt = `${basePrompt}\n\nHere are prompts based on the given levels of understanding for the explanation of "${concept}"?\n${example}\n\n${instructions}`;
+function generatePrompt(word, rating) {
+  const basePrompt = generatebasePrompts(word, rating);
+  const example = examples[rating];
+  const prompt = `${basePrompt}\n\nHere are prompts based on the given levels of understanding for the explanation of "${word}"?\n${example}\n\n${instructions}`;
   return prompt;
 }
 
-// API handler function for POST requests
 export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ message: 'Only POST requests allowed' }), {
@@ -60,8 +62,10 @@ export default async function handler(req) {
   }
 
   try {
-    const { concept, level } = await req.json();
-    const final_prompt = generatePrompt(concept, level);
+    console.log('word and rating', req.body);
+    const { word, rating } = await req.json();
+    const intRating = parseInt(rating, 10);
+    const final_prompt = generatePrompt(word, intRating);
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
@@ -74,15 +78,12 @@ export default async function handler(req) {
         },
         {
           role: 'user',
-          content: 'What is ${concept}?',
+          content: `What is ${word}?`,
         },
       ],
     });
 
-    // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
-
-    // Respond with the stream
     return new StreamingTextResponse(stream);
   } catch (error) {
     console.error('Error calling OpenAI:', error);
