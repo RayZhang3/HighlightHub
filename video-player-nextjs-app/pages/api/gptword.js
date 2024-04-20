@@ -62,8 +62,9 @@ export default async function handler(req) {
   }
 
   try {
-    console.log('word and rating', req.body);
+    //console.log('word and rating', req.body);
     const { word, rating } = await req.json();
+    console.log('word:', word, 'rating:', rating)
     const intRating = parseInt(rating, 10);
     const final_prompt = generatePrompt(word, intRating);
 

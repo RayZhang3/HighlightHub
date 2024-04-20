@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GptGetWord from './GptGetWord';
 
-const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
+const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef, rating }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState('');
   const [analyzedTexts, setAnalyzedTexts] = useState([]);
@@ -68,7 +68,7 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
             </button>
             <button onClick={() => handleAnalyze(track.text)}>Analyze</button>
             {analyzedTexts.includes(track.text) && (
-              <GptGetWord word={track.text} rating={1} />
+              <GptGetWord word={track.text} rating={rating} />
             )}
           </div>
         ))}
@@ -95,7 +95,7 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
                     Analyze
                   </button>
                   {analyzedTexts.includes(track.text) && (
-                    <GptGetWord word={track.text} rating={1} />
+                    <GptGetWord word={track.text} rating={rating} />
                   )}
                 </div>
               ))
