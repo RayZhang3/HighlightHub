@@ -2,6 +2,10 @@ import React from 'react';
 
 const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
   const handleSegmentClick = (seconds) => {
+    // if (videoRef.current) {
+    //   videoRef.current.seekTo(seconds);
+    // }
+    console.log('seconds:', seconds, 'videoRef:', videoRef)
     if (videoRef.current) {
       videoRef.current.seekTo(seconds);
     }

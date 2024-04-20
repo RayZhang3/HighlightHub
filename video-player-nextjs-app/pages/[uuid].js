@@ -10,7 +10,7 @@ import TranscriptionViz from '../components/TranscriptionViz';
 const VideoPage = () => {
   const router = useRouter();
   const { uuid } = router.query;
-  const videoRef = useRef(null);
+  const videoRef = useRef();
   const [videoUrl, setVideoUrl] = useState('');
   const [jsonUrl, setJsonUrl] = useState('');
   const [jsonData, setJsonData] = useState(null);

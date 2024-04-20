@@ -2,9 +2,10 @@ import React from 'react';
 
 const TranscriptionViz = ({ jsonData, currentTime, videoRef }) => {
   const handleWordClick = (seconds) => {
+    console.log('seconds:', seconds, 'videoRef:', videoRef)
     if (videoRef.current) {
-      videoRef.current.seekTo(seconds);
-    }
+        videoRef.current.seekTo(seconds);
+      }
   };
 
   const getTranscriptions = () => {
@@ -18,7 +19,7 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef }) => {
           if (words && words.length > 0) {
             const startTime = words[0].start_time.seconds + (words[0].start_time.nanos || 0) / 1e9;
             const endTime = words[words.length - 1].end_time.seconds + (words[words.length - 1].end_time.nanos || 0) / 1e9;
-            console.log('startTime:', startTime, 'endTime:', endTime, 'words:', words)
+            //console.log('startTime:', startTime, 'endTime:', endTime, 'words:', words)
             return {
               transcript: alternatives[0].transcript,
               startTime: startTime,
