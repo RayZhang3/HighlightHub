@@ -17,6 +17,9 @@ const VideoPage = () => {
   const [jsonData, setJsonData] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [activeComponent, setActiveComponent] = useState(''); //define the activeComponent state
+  const [rating, setRating] = useState(1);  // State to hold the selected rating
+
+
 
   useEffect(() => {
     if (!uuid) return;
@@ -43,6 +46,11 @@ const VideoPage = () => {
     fetchData();
   }, [uuid]); // Dependency on uuid ensures this effect runs only when uuid changes
 
+  // Handler for changing the rating based on dropdown selection
+  const handleRatingChange = (event) => {
+    setRating(Number(event.target.value));
+    // set the rating state to the selected value
+  };
 
   //function to handle the button click 
   const handleButtonClick = (component) => {
@@ -61,13 +69,19 @@ const VideoPage = () => {
 
     <div>
     <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
+    <label htmlFor="rating-select">Choose a rating:</label>
+        <select id="rating-select" value={rating} onChange={handleRatingChange}>
+          {[1, 2, 3, 4, 5].map(option => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
     <div>
       <button onClick={() => handleButtonClick('TranscriptionViz')}>Current Transcription time </button>
       <button onClick={() => handleButtonClick('TextDetectionViz')}>Text Detection</button>
       <button onClick={() => handleButtonClick('DisplayJson')}>Transcripts and Summarization </button>
     </div>
     {activeComponent === 'TranscriptionViz' && jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
-    {activeComponent === 'TextDetectionViz' && jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
+    {activeComponent === 'TextDetectionViz' && jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} rating={rating}/>}
     {activeComponent === 'DisplayJson' && jsonData && <DisplayJson jsonData={jsonData} />}
   </div>
 );
