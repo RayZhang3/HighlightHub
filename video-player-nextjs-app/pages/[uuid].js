@@ -5,6 +5,7 @@ import VideoPlayer from '../components/VideoPlayer';
 import DisplayJson from '../components/DisplayJson'; 
 import GptResponseDisplay from '../components/GptResponseDisplay'; 
 import TextDetectionViz from '../components/TextDetectionViz'; // Assuming this component is stored in components folder
+import TranscriptionViz from '../components/TranscriptionViz';
 
 const VideoPage = () => {
   const router = useRouter();
@@ -43,6 +44,7 @@ const VideoPage = () => {
   return (
     <div>
       <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
+      {jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
       {jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
       {jsonData && <DisplayJson jsonData={jsonData} />}
     </div>
