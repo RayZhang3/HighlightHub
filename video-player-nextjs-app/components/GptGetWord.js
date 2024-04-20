@@ -81,7 +81,7 @@ const GptGetWord = ({ word, rating }) => {
 
   return (
     <div>
-      <h3>Word GPT Response</h3>
+      <h4>Explanation for [{word}] :</h4>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
       <p>{response}</p>

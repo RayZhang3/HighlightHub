@@ -4,11 +4,10 @@ import GptGetWord from './GptGetWord';
 const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState('');
-  const [showGptGetWord, setShowGptGetWord] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
+  const [analyzedTexts, setAnalyzedTexts] = useState([]);
 
   const handleSegmentClick = (seconds) => {
-    console.log('seconds:', seconds, 'videoRef:', videoRef)
+    console.log('seconds:', seconds, 'videoRef:', videoRef);
     if (videoRef.current) {
       videoRef.current.seekTo(seconds);
     }
@@ -26,15 +25,15 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
 
   const getTextTracks = () => {
     return jsonData.annotation_results
-      .filter(ar => 'text_annotations' in ar)
-      .flatMap(ar => ar.text_annotations)
-      .map(text => {
+      .filter((ar) => 'text_annotations' in ar)
+      .flatMap((ar) => ar.text_annotations)
+      .map((text) => {
         const startTime = text.segments[0].segment.start_time_offset.seconds;
         const endTime = text.segments[0].segment.end_time_offset.seconds;
         return {
           text: text.text,
           startTime: startTime,
-          endTime: endTime
+          endTime: endTime,
         };
       });
   };
@@ -42,16 +41,20 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
   const textTracks = getTextTracks();
 
   const getCurrentTextTracks = () => {
-    return textTracks.filter(track =>
-      track.startTime <= currentTime && track.endTime >= currentTime
+    return textTracks.filter(
+      (track) => track.startTime <= currentTime && track.endTime >= currentTime
     );
   };
 
   const currentTextTracks = getCurrentTextTracks();
 
-  const filteredTextTracks = textTracks.filter(track =>
+  const filteredTextTracks = textTracks.filter((track) =>
     track.text.toLowerCase().includes(submittedSearchTerm.toLowerCase())
   );
+
+  const handleAnalyze = (text) => {
+    setAnalyzedTexts((prevAnalyzedTexts) => [...prevAnalyzedTexts, text]);
+  };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -63,16 +66,13 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
             <button onClick={() => handleSegmentClick(track.startTime)}>
               Jump to {track.startTime}s
             </button>
-            <button onClick={() => {
-              setSelectedText(track.text);
-              setShowGptGetWord(true);
-            }}>
-              Analyze
-            </button>
+            <button onClick={() => handleAnalyze(track.text)}>Analyze</button>
+            {analyzedTexts.includes(track.text) && (
+              <GptGetWord word={track.text} rating={1} />
+            )}
           </div>
         ))}
       </div>
-
       <div>
         <input
           type="text"
@@ -83,30 +83,28 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef }) => {
         />
         <button onClick={handleSearchSubmit}>Search</button>
         {submittedSearchTerm && (
-          filteredTextTracks.length > 0 ? (
-            filteredTextTracks.map((track, index) => (
-              <div key={index}>
-                <div>{track.text}</div>
-                <button onClick={() => handleSegmentClick(track.startTime)}>
-                  Jump to {track.startTime}s
-                </button>
-                <button onClick={() => {
-                  setSelectedText(track.text);
-                  setShowGptGetWord(true);
-                }}>
-                  Analyze
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No text matches your search.</p>
-          )
+          <>
+            {filteredTextTracks.length > 0 ? (
+              filteredTextTracks.map((track, index) => (
+                <div key={index}>
+                  <div>{track.text}</div>
+                  <button onClick={() => handleSegmentClick(track.startTime)}>
+                    Jump to {track.startTime}s
+                  </button>
+                  <button onClick={() => handleAnalyze(track.text)}>
+                    Analyze
+                  </button>
+                  {analyzedTexts.includes(track.text) && (
+                    <GptGetWord word={track.text} rating={1} />
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>No text matches your search.</p>
+            )}
+          </>
         )}
       </div>
-
-      {showGptGetWord && (
-        <GptGetWord word={selectedText} rating={1} />
-      )}
     </div>
   );
 };
