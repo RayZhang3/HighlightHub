@@ -80,7 +80,7 @@ const VideoPage = () => {
       <button onClick={() => handleButtonClick('TextDetectionViz')}>Text Detection</button>
       <button onClick={() => handleButtonClick('DisplayJson')}>Transcripts and Summarization </button>
     </div>
-    {activeComponent === 'TranscriptionViz' && jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
+    {activeComponent === 'TranscriptionViz' && jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} rating={rating}/>}
     {activeComponent === 'TextDetectionViz' && jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} rating={rating}/>}
     {activeComponent === 'DisplayJson' && jsonData && <DisplayJson jsonData={jsonData} />}
   </div>
