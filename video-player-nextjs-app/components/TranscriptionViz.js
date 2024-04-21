@@ -35,6 +35,11 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
       }
     }
   }, [jsonData, onTranscriptsChange]);
+  
+  // Clear analysis results when the rating changes
+  useEffect(() => {
+    setAnalysisResults({}); // Clear analysis results when the rating changes
+  }, [rating]);
 
   const getTranscriptions = () => {
     return jsonData.annotation_results
@@ -72,10 +77,13 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
   const currentTranscription = getCurrentTranscription();
 
   const handleAnalyzeClick = (transcriptionId, transcript) => {
-    setAnalysisResults((prevResults) => ({
-      ...prevResults,
-      [transcriptionId]: transcript,
-    }));
+    // setAnalysisResults((prevResults) => ({
+    //   ...prevResults,
+    //   [transcriptionId]: transcript,
+    // }));
+    setAnalysisResults({
+      [transcriptionId]: transcript
+    });
   };
 
   return (
