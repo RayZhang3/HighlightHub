@@ -60,25 +60,95 @@ const VideoPage = () => {
 
   if (!videoUrl) return <div>Loading...</div>;
   return (
-    // <div>
-    //   <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
-    //   {jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
-    //   {jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} />}
-    //   {jsonData && <DisplayJson jsonData={jsonData} />}
-    // </div>
+    <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      height: '100vh',
+      width: '100vw',
+      backgroundColor: 'white' // Optional: Adds a cinema-like background
+    }}
+    >
+    <VideoPlayer 
+      ref={videoRef} 
+      src={videoUrl} 
+      onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)}
+      style={{
+        maxWidth: '100%',
+        maxHeight: '90vh', // Adjust this as needed
+        width: 'auto',
+        height: 'auto',
+        border: 'none' // Ensures no border around the video
+      }}
+    />
+
+  <label htmlFor="rating-select" style={{
+    color: '#45497d', // Same text color as the buttons
+    border: '2px solid #45497d',
+    padding: '10px 10px', // Similar padding to the buttons
+    borderRadius: '10px', // Same border radius as the buttons
+    marginRight: '20px', // Remove bottom margin to align on the same line
+    fontSize: '20px'
+  }}>
+    Your Understanding Level
+  </label>
+
+  <select id="rating-select" value={rating} onChange={handleRatingChange} style={{
+    color: '#45497d', // Text color for the options
+    border: '2px solid #45497d',
+    borderRadius: '10px', // Rounded corners
+    padding: '8px 5px', // Padding for the select box
+    width: 'auto', // Default width or adjust as necessary
+    marginBottom: '20px',
+    marginTop: '20px',
+    fontSize: '16px'
+  }}>
+    {[1, 2, 3, 4, 5].map(option => (
+      <option key={option} value={option}>{option}</option>
+    ))}
+  </select>
+  
+  <label style={{ color: '#45497d', marginLeft: '20px',
+        fontSize: '20px'}}>
+    1 - <span style={{ marginRight: '20px' }}>Unfamiliar</span>5 - Expert
+  </label>
+
 
     <div>
-    <VideoPlayer ref={videoRef} src={videoUrl} onProgress={({ playedSeconds }) => setCurrentTime(playedSeconds)} />
-    <label htmlFor="rating-select">Choose a rating:</label>
-        <select id="rating-select" value={rating} onChange={handleRatingChange}>
-          {[1, 2, 3, 4, 5].map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-        </select>
-    <div>
-      <button onClick={() => handleButtonClick('TranscriptionViz')}>Current Transcription </button>
-      <button onClick={() => handleButtonClick('TextDetectionViz')}>Text Detection</button>
-      <button onClick={() => handleButtonClick('DisplayJson')}>Transcripts and Summarization </button>
+      <button onClick={() => handleButtonClick('TranscriptionViz')}
+      style={{ 
+        borderRadius: '10px', 
+        border: '2px solid #5F6AE6', 
+        color: '#5F6AE6', 
+        padding: '10px 20px', 
+        marginRight: '10px', 
+        marginTop: '10px',
+        backgroundColor: 'white',
+        fontSize: '16px'
+       }}
+      > Subtitles/Captions </button>
+      <button onClick={() => handleButtonClick('TextDetectionViz')}
+      style={{ borderRadius: '10px', 
+      border: '2px solid #5F6AE6', 
+      color: '#5F6AE6', 
+      padding: '10px 20px',
+      marginRight: '10px',
+      backgroundColor: 'white',
+      fontSize: '16px' 
+    }}
+      >Text Detection</button>
+      <button onClick={() => handleButtonClick('DisplayJson')} 
+      style={{ 
+        borderRadius: '10px', 
+        border: '2px solid #5F6AE6', 
+        color: '#5F6AE6', 
+        padding: '10px 20px',
+        marginRight: '10px',
+        backgroundColor: 'white',
+        fontSize: '16px'
+      }}
+      >Transcripts </button>
     </div>
     {activeComponent === 'TranscriptionViz' && jsonData && <TranscriptionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} rating={rating}/>}
     {activeComponent === 'TextDetectionViz' && jsonData && <TextDetectionViz jsonData={jsonData} videoInfo={{ frameRate: 30 }} currentTime={currentTime} videoRef={videoRef} rating={rating}/>}

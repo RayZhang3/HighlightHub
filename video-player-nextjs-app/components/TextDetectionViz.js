@@ -67,16 +67,59 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef, rating }
 
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div>
+    <div 
+    // style={{ display: 'flex', justifyContent: 'space-between' }}
+    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+    >
+      <div
+      style={{
+        width: '800px',
+        // maxWidth: '1000px',
+        maxHeight: '400px',
+        minHeight: '100px',
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+        whiteSpace: 'pre-wrap',
+        wordWrap: 'break-word',
+        border: '2px solid #45497d',
+        padding: '10px',
+        fontSize: '18px',
+        marginTop: '65px'
+      }}
+      >
         <p>Detected text on screen at {Math.floor(currentTime)}s:</p>
         {currentTextTracks.map((track, index) => (
           <div key={index}>
             <div>{track.text}</div>
-            <button onClick={() => handleSegmentClick(track.startTime)}>
+            <button onClick={() => handleSegmentClick(track.startTime)}
+            style={{
+              color: '#45497d', // Text color for the options
+              border: '2px solid #45497d',
+              borderRadius: '10px', // Rounded corners
+              padding: '8px 5px', // Padding for the select box
+              width: 'auto', // Default width or adjust as necessary
+              marginBottom: '20px',
+              marginTop: '20px',
+              backgroundColor: 'white',
+              fontSize: '16px',
+              marginRight: '10px'
+            }}
+            >
               Jump to {track.startTime}s
             </button>
-            <button onClick={() => handleAnalyze(track.text)}>Analyze</button>
+            <button onClick={() => handleAnalyze(track.text)}
+            style={{
+              color: '#45497d', // Text color for the options
+              border: '2px solid #45497d',
+              borderRadius: '10px', // Rounded corners
+              padding: '8px 5px', // Padding for the select box
+              width: 'auto', // Default width or adjust as necessary
+              marginBottom: '20px',
+              marginTop: '20px',
+              backgroundColor: 'white',
+              fontSize: '16px'
+            }}
+            >Analyze</button>
             {/* 
               Render GptGetWord only if the text is in analyzedTexts and the rating matches.
               This prevents re-rendering if the rating is changed after analysis.
@@ -87,25 +130,93 @@ const TextDetectionViz = ({ jsonData, videoInfo, currentTime, videoRef, rating }
           </div>
         ))}
       </div>
-      <div>
+
+      <div
+      style={{
+        width: '300px',
+        // maxWidth: '1000px',
+        maxHeight: '400px',
+        minHeight: '100px',
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+        whiteSpace: 'pre-wrap',
+        wordWrap: 'break-word',
+        border: '2px solid #45497d',
+        padding: '10px',
+        fontSize: '18px',
+        marginTop: '65px',
+        marginLeft: '20px'
+      }}
+      >
         <input
           type="text"
           placeholder="Search for text..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
+          style={{
+            width: '100%',         
+            padding: '8px 12px',   
+            margin: '10px 0',       
+            boxSizing: 'border-box',
+            border: '2px solid #45497d', 
+            borderRadius: '4px',    
+            outline: 'none',       
+            fontSize: '16px',       
+            color: '#333',          
+            backgroundColor: '#fff', 
+            boxShadow: '0 2px 5px rgba(0,0,0,0.1)' 
+          }}
+
         />
-        <button onClick={handleSearchSubmit}>Search</button>
+        <button onClick={handleSearchSubmit}
+        style={{
+          color: '#45497d', // Text color for the options
+          border: '2px solid #45497d',
+          borderRadius: '10px', // Rounded corners
+          padding: '8px 5px', // Padding for the select box
+          width: 'auto', // Default width or adjust as necessary
+          marginBottom: '20px',
+          marginTop: '20px',
+          backgroundColor: 'white',
+          fontSize: '16px'
+        }}
+        >Search</button>
         {submittedSearchTerm && (
           <>
             {filteredTextTracks.length > 0 ? (
               filteredTextTracks.map((track, index) => (
                 <div key={index}>
                   <div>{track.text}</div>
-                  <button onClick={() => handleSegmentClick(track.startTime)}>
+                  <button onClick={() => handleSegmentClick(track.startTime)}
+                  style={{
+                    color: '#45497d', // Text color for the options
+                    border: '2px solid #45497d',
+                    borderRadius: '10px', // Rounded corners
+                    padding: '8px 5px', // Padding for the select box
+                    width: 'auto', // Default width or adjust as necessary
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                    backgroundColor: 'white',
+                    fontSize: '16px',
+                    marginRight:'20px'
+                  }}
+                  >
                     Jump to {track.startTime}s
                   </button>
-                  <button onClick={() => handleAnalyze(track.text)}>
+                  <button onClick={() => handleAnalyze(track.text)}
+                  style={{
+                    color: '#45497d', // Text color for the options
+                    border: '2px solid #45497d',
+                    borderRadius: '10px', // Rounded corners
+                    padding: '8px 5px', // Padding for the select box
+                    width: 'auto', // Default width or adjust as necessary
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                    backgroundColor: 'white',
+                    fontSize: '16px'
+                  }}
+                  >
                     Analyze
                   </button>
                   {analyzedTexts.includes(track.text) && (

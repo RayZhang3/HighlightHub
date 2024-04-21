@@ -61,15 +61,24 @@ useEffect(() => {
 
   return (
     <div>
-        <h2>Transcripts</h2>
+        <h2
+        style={{ color: '#45497d',
+        fontSize: '24px'}}>
+          Transcripts</h2>
         {/* Scrollable preformatted text block */}
         <pre style={{
-            maxHeight: '400px',
+            width: '700px',          // Set the width to 80% of its container
+            // maxWidth: '1000px',     // Optionally limit the maximum width
+            maxHeight: '400px',    // Maximum height before scrolling
+            minHeight: '100px',    // Minimum height, even if empty
+            boxSizing: 'border-box', // Includes padding and border in the width calculation
             overflowY: 'auto',
             whiteSpace: 'pre-wrap',
             wordWrap: 'break-word',
-            border: '1px solid #ccc',
-            padding: '10px'
+            border: '2px solid #45497d',
+            padding: '10px',
+            fontSize: '16px',
+            marginRight: '20px'
         }}>
             {transcripts}
         </pre>
@@ -77,7 +86,7 @@ useEffect(() => {
 );
 
 
-};
+}; 
 
 export default TranscriptionsDisplay;
 

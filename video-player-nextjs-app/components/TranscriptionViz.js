@@ -86,13 +86,72 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
     });
   };
 
-  return (
-    <div>
+  // return (
+  //   <div>
+  //     <p>Current transcription at {currentTime.toFixed(2)}s:</p>
+  //     <div>
+  //       {currentTranscription && (
+  //         <>
+  //           <span>
+  //             {currentTranscription.words.map((word, index) => (
+  //               <span
+  //                 key={index}
+  //                 onClick={() => handleWordClick(word.start_time.seconds + (word.start_time.nanos || 0) / 1e9)}
+  //                 style={{ cursor: 'pointer', marginRight: '4px' }}
+  //               >
+  //                 {word.word}
+  //               </span>
+  //             ))}
+  //           </span>
+  //           <button onClick={() => handleAnalyzeClick(currentTranscription.id, currentTranscription.transcript)}>
+  //             Analyze
+  //           </button>
+  //         </>
+  //       )}
+  //     </div>
+  //     {/* {Object.entries(analysisResults).map(([transcriptionId, transcript]) => (
+  //       <TranscriptionAnalysis
+  //         key={transcriptionId}
+  //         transcript={transcript}
+  //         fullContent={transcripts}
+  //         rating={rating}
+  //       />
+  //     ))} */}
+  //     {currentTranscription && currentTranscription.id in analysisResults && (
+  //       <TranscriptionAnalysis
+  //         key={currentTranscription.id}
+  //         transcript={analysisResults[currentTranscription.id]}
+  //         fullContent={transcripts}
+  //         rating={rating}
+  //       />
+  //     )}
+  //   </div>
+  // );
+
+
+return (
+  <div>
+    {/* Transcript container on the left with detailed styling */}
+    <div style={{
+      width: '90%',
+      maxWidth: '1000px',
+      maxHeight: '400px',
+      minHeight: '100px',
+      margin: 'auto',
+      boxSizing: 'border-box',
+      overflowY: 'auto',
+      whiteSpace: 'pre-wrap',
+      wordWrap: 'break-word',
+      border: '2px solid #45497d',
+      padding: '10px',
+      fontSize: '20px',
+      marginTop: '20px'
+    }}>
       <p>Current transcription at {currentTime.toFixed(2)}s:</p>
       <div>
         {currentTranscription && (
           <>
-            <span>
+            <div style={{ marginBottom: '20px' }}>
               {currentTranscription.words.map((word, index) => (
                 <span
                   key={index}
@@ -102,31 +161,61 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
                   {word.word}
                 </span>
               ))}
-            </span>
-            <button onClick={() => handleAnalyzeClick(currentTranscription.id, currentTranscription.transcript)}>
-              Analyze
-            </button>
+            </div>
           </>
         )}
       </div>
-      {/* {Object.entries(analysisResults).map(([transcriptionId, transcript]) => (
-        <TranscriptionAnalysis
-          key={transcriptionId}
-          transcript={transcript}
-          fullContent={transcripts}
-          rating={rating}
-        />
-      ))} */}
-      {currentTranscription && currentTranscription.id in analysisResults && (
-        <TranscriptionAnalysis
-          key={currentTranscription.id}
-          transcript={analysisResults[currentTranscription.id]}
-          fullContent={transcripts}
-          rating={rating}
-        />
+    </div>
+
+    {/* Analysis container on the right with similar styling */}
+    <div style={{
+      width: '90%',
+      maxWidth: '1000px',
+      maxHeight: '400px',
+      minHeight: '100px',
+      margin: 'auto',
+      boxSizing: 'border-box',
+      overflowY: 'auto',
+      whiteSpace: 'pre-wrap',
+      wordWrap: 'break-word',
+      border: '2px solid #45497d',
+      padding: '10px',
+      fontSize: '20px',
+      marginTop: '20px'
+    }}>
+      {currentTranscription && (
+        <>
+          <button onClick={() => handleAnalyzeClick(currentTranscription.id, currentTranscription.transcript)} 
+          style={{ 
+            borderRadius: '10px', 
+            border: '2px solid #5F6AE6', 
+            color: '#5F6AE6', 
+            padding: '10px 20px',
+            marginRight: '10px',
+            backgroundColor: 'white',
+            fontSize: '16px'
+          }}
+          >
+            Analyze
+          </button>
+          {currentTranscription.id in analysisResults && (
+            <TranscriptionAnalysis
+              key={currentTranscription.id}
+              transcript={analysisResults[currentTranscription.id]}
+              fullContent={transcripts}
+              rating={rating}
+            />
+          )}
+        </>
       )}
     </div>
-  );
+  </div>
+);
+
+
+
+  
+
 };
 
 export default TranscriptionViz;
