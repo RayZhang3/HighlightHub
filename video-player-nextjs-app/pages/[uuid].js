@@ -76,7 +76,7 @@ const VideoPage = () => {
           ))}
         </select>
     <div>
-      <button onClick={() => handleButtonClick('TranscriptionViz')}>Current Transcription time </button>
+      <button onClick={() => handleButtonClick('TranscriptionViz')}>Current Transcription </button>
       <button onClick={() => handleButtonClick('TextDetectionViz')}>Text Detection</button>
       <button onClick={() => handleButtonClick('DisplayJson')}>Transcripts and Summarization </button>
     </div>

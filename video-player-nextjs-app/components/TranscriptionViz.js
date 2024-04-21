@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import TranscriptionAnalysis from './TranscriptionAnalysis';
 
 const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange, rating }) => {
-  // State to hold the analysis result
-  const [analysisResult, setAnalysisResult] = useState('');
-  // State to hold the all transcriptions
+  // State to hold the analysis results
+  const [analysisResults, setAnalysisResults] = useState({});
+
+  // State to hold all transcriptions
   const [transcripts, setTranscripts] = useState('');
-  // State to hold the selected transcript for analysis
-  const [selectedTranscript, setSelectedTranscript] = useState(null);
+
   const handleWordClick = (seconds) => {
-    console.log('seconds:', seconds, 'videoRef:', videoRef)
+    console.log('seconds:', seconds, 'videoRef:', videoRef);
     if (videoRef.current) {
       videoRef.current.seekTo(seconds);
     }
@@ -23,14 +23,13 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
         result.speech_transcriptions?.forEach((transcription) => {
           transcription.alternatives.forEach((alternative) => {
             if (alternative.transcript) {
-              allTranscripts += (alternative.transcript + ' ');
+              allTranscripts += alternative.transcript + ' ';
             }
           });
         });
       });
       const trimmedTranscripts = allTranscripts.trim();
       setTranscripts(trimmedTranscripts);
-
       if (onTranscriptsChange) {
         onTranscriptsChange(trimmedTranscripts);
       }
@@ -39,9 +38,9 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
 
   const getTranscriptions = () => {
     return jsonData.annotation_results
-      .filter(ar => 'speech_transcriptions' in ar)
-      .flatMap(ar => ar.speech_transcriptions)
-      .map(st => {
+      .filter((ar) => 'speech_transcriptions' in ar)
+      .flatMap((ar) => ar.speech_transcriptions)
+      .map((st) => {
         const alternatives = st.alternatives;
         if (alternatives && alternatives.length > 0) {
           const words = alternatives[0].words;
@@ -49,30 +48,34 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
             const startTime = words[0].start_time.seconds + (words[0].start_time.nanos || 0) / 1e9;
             const endTime = words[words.length - 1].end_time.seconds + (words[words.length - 1].end_time.nanos || 0) / 1e9;
             return {
+              id: `${startTime}-${endTime}`, // Generate a unique identifier for each transcription
               transcript: alternatives[0].transcript,
               startTime: startTime,
               endTime: endTime,
-              words: words
+              words: words,
             };
           }
         }
         return null;
       })
-      .filter(transcription => transcription !== null);
+      .filter((transcription) => transcription !== null);
   };
 
   const transcriptions = getTranscriptions();
 
   const getCurrentTranscription = () => {
-    return transcriptions.find(transcription =>
-      transcription.startTime <= currentTime && transcription.endTime >= currentTime
+    return transcriptions.find(
+      (transcription) => transcription.startTime <= currentTime && transcription.endTime >= currentTime
     );
   };
 
   const currentTranscription = getCurrentTranscription();
 
-  const handleAnalyzeClick = (transcript) => {
-    setSelectedTranscript(transcript);
+  const handleAnalyzeClick = (transcriptionId, transcript) => {
+    setAnalysisResults((prevResults) => ({
+      ...prevResults,
+      [transcriptionId]: transcript,
+    }));
   };
 
   return (
@@ -92,15 +95,24 @@ const TranscriptionViz = ({ jsonData, currentTime, videoRef, onTranscriptsChange
                 </span>
               ))}
             </span>
-            <button onClick={() => handleAnalyzeClick(currentTranscription.transcript)}>
+            <button onClick={() => handleAnalyzeClick(currentTranscription.id, currentTranscription.transcript)}>
               Analyze
             </button>
           </>
         )}
       </div>
-      {selectedTranscript && (
+      {/* {Object.entries(analysisResults).map(([transcriptionId, transcript]) => (
         <TranscriptionAnalysis
-          transcript={selectedTranscript}
+          key={transcriptionId}
+          transcript={transcript}
+          fullContent={transcripts}
+          rating={rating}
+        />
+      ))} */}
+      {currentTranscription && currentTranscription.id in analysisResults && (
+        <TranscriptionAnalysis
+          key={currentTranscription.id}
+          transcript={analysisResults[currentTranscription.id]}
           fullContent={transcripts}
           rating={rating}
         />
